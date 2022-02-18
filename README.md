@@ -192,3 +192,6 @@ docker pull ghcr.io/alexf4dev/hello-world:latest
 
 docker run ghcr.io/alexf4dev/hello-world:latest
 ```
+
+ export CR_PAT=
+ echo $CR_PAT | docker login ghcr.io -u alexf4dev --password-stdin
