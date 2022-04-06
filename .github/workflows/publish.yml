@@ -4,8 +4,8 @@ on:
   workflow_dispatch:
     inputs:
       pull_request:
-        description: Pull request sha
-        default: "xxxxxxxx"
+        description: Pull request number
+        default: "0"
         required: true
 env:
   REGISTRY: ghcr.io
@@ -37,6 +37,6 @@ jobs:
         context: .
         push: true
         file: ./Dockerfile
-        tags: ${{ steps.meta.outputs.tags }}
+        tags: ${{ env.REGISTRY }}/${{ github.repository }}:${{ github.event.inputs.pull_request }}
         labels: ${{ steps.meta.outputs.labels }}
 
