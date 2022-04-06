@@ -1,7 +1,15 @@
 name: publish
 
-on: [push]
-
+on: 
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Bump Version
+        default: v1.0.0
+        required: true
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 jobs:
   publish-hello-world-image:
     runs-on: ubuntu-latest
@@ -16,9 +24,17 @@ jobs:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Build the hello-world Docker image
-      run: |
-        docker build . --tag ghcr.io/alexf4dev/hello-world:latest
-        docker run ghcr.io/alexf4dev/hello-world:latest
-        docker push ghcr.io/alexf4dev/hello-world:latest
-
+    - name: Extract metadata (tags, labels) for Docker
+      id: meta
+      uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+      with:
+        images: ${{ env.REGISTRY }}/${{ github.repository }}
+    - uses: actions/checkout@v2
+    - name: Build and push docker image to github registry
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        push: true
+        file: ./Dockerfile
+        tags: ${{ steps.meta.outputs.tags }}
+        labels: ${{ steps.meta.outputs.labels }}
