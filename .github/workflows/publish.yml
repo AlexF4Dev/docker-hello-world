@@ -15,9 +15,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Downcase repo name
-      run: | 
-        echo "GITHUB_REPOSITORY_LOWER_CASE=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}     
+    - id: repository
+      uses: ASzc/change-string-case-action@v2
+      with:
+        string: ${{ github.repository }}    
+    # - name: Downcase repo name
+    #   run: | 
+    #     echo "GITHUB_REPOSITORY_LOWER_CASE=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}     
     - uses: actions/checkout@v3
       with:
         ref: refs/pull/${{ github.event.inputs.pull_request }}/head 
@@ -34,5 +38,5 @@ jobs:
         context: .
         push: true
         file: ./Dockerfile
-        tags: ${{ env.REGISTRY }}/${{ env.GITHUB_REPOSITORY_LOWER_CASE }}:pr${{ github.event.inputs.pull_request }}
+        tags: ${{ env.REGISTRY }}/${{ steps.repository.outputs.lowercase }}:pr${{ github.event.inputs.pull_request }}
 
